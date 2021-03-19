@@ -18,12 +18,12 @@ var infosToCheck []CheckInfo
 func main() {
 	err, infos := initializeChecks()
 	if err != nil {
-		log.Fatal("Unable to parse input")
+		log.Fatal("Unable to parse configuration file")
 	}
 	infosToCheck = infos
 	task := &Task{
 		closed: make(chan struct{}),
-		ticker: time.NewTicker(time.Second * 20),
+		ticker: time.NewTicker(time.Second * time.Duration(runtimeConfig.tickerDuration)),
 	}
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt)
@@ -39,7 +39,7 @@ func main() {
 }
 
 func initializeChecks() (error, []CheckInfo) {
-	file, err := ioutil.ReadFile("config.json")
+	file, err := ioutil.ReadFile(runtimeConfig.configFileLocation)
 	if err != nil {
 		return err, nil
 	}
