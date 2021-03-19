@@ -31,14 +31,23 @@ The configuration files looks like so. It's an array of sites you want to monito
 Definitions:
 
 "url": The URL of the product you're monitoring
+
 "key": The key that will show in the cli
+
 "vendor": The vendor that's selling your object
+
 "description": Some description. It's not used now
+
 "lookFor": A key to look for on the page
+
 "onSuccessMessage": What you want printed when it's a successful test
+
 "onFailureMessage": What you want printed when it's an unsuccessful test
+
 "mailTo": TODO - who to mail notifications of success to
+
 "smsTo": TODO - who to send an SMS notification to
+
 "checkType": Either:
 
 - className : find an object by a class name. Helpful for sites with stylized "out of stock" messages
