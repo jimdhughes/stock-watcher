@@ -13,6 +13,8 @@ type Mailer struct {
 	SmtpPort string
 }
 
+var AppMailer *Mailer
+
 func (m *Mailer) SendMail(to []string, message, subject string) error {
 	if (m.SmtpHost == "" || m.Email == "" || m.Password == "" || m.SmtpPort == "") {
 		return errors.New("Mailer is not initialized")

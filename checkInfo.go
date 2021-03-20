@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"time"
 
 	"github.com/gookit/color"
 )
@@ -13,7 +15,7 @@ type CheckInfo struct {
 	LookFor          string `json:"lookFor"`
 	OnSuccessMessage string `json:"onSuccessMessage"`
 	OnFailureMessage string `json:"onFailureMessage"`
-	MailTo           string `json:"mailTo"`
+	MailTo           []string `json:"mailTo"`
 	SmsTo            string `json:"smsTo"`
 	CheckType        string `json:"checkType"`
 	IsNegativeCheck  bool   `json:"isNegativeCheck"`
@@ -21,13 +23,39 @@ type CheckInfo struct {
 }
 
 func (c *CheckInfo) HandleLogEvent(success bool) {
-	if c.IsNegativeCheck == true {
-		success = !success
-	}
 	if success {
 		log.Printf("[%s] %s : %s @ %s\n", c.Vendor, c.Key, color.FgGreen.Render(c.OnSuccessMessage), c.URL)
 	}
 	if !success {
 		log.Printf("[%s] %s : %s @ %s\n", c.Vendor, c.Key, color.FgRed.Render(c.OnFailureMessage), c.URL)
 	}
+}
+
+
+func (c *CheckInfo) GetMailMessage() string {
+	datetime := time.Now()
+	return fmt.Sprintf("[%s] %s : %s @ %s\n%s\n", c.Vendor, c.Key, c.OnSuccessMessage, c.URL, datetime.Format("2006-01-02 15:04:05"))
+}
+
+func (c *CheckInfo) GetMailSubject() string {
+	return fmt.Sprintf("[%s] %s is %s", c.Vendor, c.Key, c.OnSuccessMessage)
+}
+
+func (c *CheckInfo) HandleMail(success bool) {
+	if success == false {
+		return
+	}
+	err := AppMailer.SendMail(c.MailTo, c.GetMailMessage(), c.GetMailSubject())
+	log.Printf("ERROR trying to send mail: %s\n", err.Error())
+}
+
+func (c *CheckInfo) HandleFailure() {
+	success := !c.IsNegativeCheck
+	c.HandleLogEvent(success)
+}
+
+func (c *CheckInfo) HandleSuccess() {
+	success := !c.IsNegativeCheck
+	c.HandleLogEvent(success)
+	c.HandleMail(success)
 }

@@ -7,7 +7,7 @@
     "lookFor": ".product-out-of-stock",
     "onSuccessMessage": "IN stock",
     "onFailureMessage": "OUT of stock",
-    "mailTo": "",
+    "mailTo": [""],
     "smsTo": "",
     "checkType": "className",
     "isNegativeCheck": true
@@ -20,7 +20,7 @@
     "lookFor": ".product-out-of-stock",
     "onSuccessMessage": "IN stock",
     "onFailureMessage": "OUT of stock",
-    "mailTo": "",
+    "mailTo": [""],
     "smsTo": "",
     "checkType": "className",
     "isNegativeCheck": true
@@ -33,7 +33,7 @@
     "lookFor": "Add To Cart",
     "onSuccessMessage": "IN stock",
     "onFailureMessage": "OUT of stock",
-    "mailTo": "",
+    "mailTo": [""],
     "smsTo": "",
     "checkType": "text",
     "isNegativeCheck": false

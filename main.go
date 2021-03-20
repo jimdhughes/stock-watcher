@@ -16,6 +16,13 @@ import (
 
 var infosToCheck []CheckInfo
 
+const(
+	SMTP_HOST="SMTP_HOST"
+	SMPT_PORT="SMTP_PORT"
+	SMTP_EMAIL="SMTP_PASSWORD"
+	SMTP_PASSWORD="SMTP_PASSWORD"
+)
+
 func main() {
 	initializeEnv()
 	err, infos := initializeChecks()
@@ -42,6 +49,12 @@ func main() {
 
 func initializeEnv() {
 	godotenv.Load()
+	AppMailer = &Mailer{
+		SmtpHost:os.Getenv(SMTP_HOST),
+		SmtpPort: os.Getenv(SMPT_PORT),
+		Email: os.Getenv(SMTP_EMAIL),
+		Password: os.Getenv(SMTP_PASSWORD),
+	}
 }
 
 func initializeChecks() (error, []CheckInfo) {
@@ -84,17 +97,17 @@ func handlePageCheck(doc *goquery.Document, c CheckInfo) {
 	case "className":
 		sel := doc.Find(".product-out-of-stock")
 		if len(sel.Nodes) > 0 {
-			c.HandleLogEvent(true)
+			c.HandleSuccess()
 		}
 		if len(sel.Nodes) == 0 {
-			c.HandleLogEvent(false)
+			c.HandleFailure()
 		}
 		break
 
 	case "text":
 		sel := doc.Text()
 		if strings.Contains(sel, c.LookFor) {
-			c.HandleLogEvent(true)
+			c.HandleSuccess()
 		}
 		c.HandleLogEvent(false)
 		break
