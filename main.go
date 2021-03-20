@@ -11,11 +11,13 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/joho/godotenv"
 )
 
 var infosToCheck []CheckInfo
 
 func main() {
+	initializeEnv()
 	err, infos := initializeChecks()
 	if err != nil {
 		log.Fatal("Unable to parse configuration file")
@@ -36,6 +38,10 @@ func main() {
 		log.Printf("Got %s signal. Aborting...\n", sig)
 		task.Stop()
 	}
+}
+
+func initializeEnv() {
+	godotenv.Load()
 }
 
 func initializeChecks() (error, []CheckInfo) {
