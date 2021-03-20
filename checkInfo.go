@@ -33,7 +33,8 @@ func (c *CheckInfo) HandleLogEvent(success bool) {
 
 func (c *CheckInfo) GetMailMessage() string {
 	datetime := time.Now()
-	return fmt.Sprintf("[%s] %s : %s @ %s\n%s\n", c.Vendor, c.Key, c.OnSuccessMessage, c.URL, datetime.Format("2006-01-02 15:04:05"))
+	msg:= fmt.Sprintf("[%s] %s : %s @ %s\n%s\n", c.Vendor, c.Key, c.OnSuccessMessage, c.URL, datetime.Format("2006-01-02 15:04:05"))
+	return msg
 }
 
 func (c *CheckInfo) GetMailSubject() string {
@@ -45,12 +46,15 @@ func (c *CheckInfo) HandleMail(success bool) {
 		return
 	}
 	err := AppMailer.SendMail(c.MailTo, c.GetMailMessage(), c.GetMailSubject())
-	log.Printf("ERROR trying to send mail: %s\n", err.Error())
+	if err != nil {
+		log.Printf("ERROR trying to send mail: %s\n", err.Error())
+	}
 }
 
 func (c *CheckInfo) HandleFailure() {
 	success := !c.IsNegativeCheck
 	c.HandleLogEvent(success)
+	c.HandleMail(success)
 }
 
 func (c *CheckInfo) HandleSuccess() {

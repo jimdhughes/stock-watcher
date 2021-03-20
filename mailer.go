@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/smtp"
 )
 
@@ -20,14 +21,16 @@ func (m *Mailer) SendMail(to []string, message, subject string) error {
 		return errors.New("Mailer is not initialized")
 	}
 	auth := smtp.PlainAuth("", m.Email, m.Password, m.SmtpHost)
-	msg := m.formatMessage(subject, message)
-	err := smtp.SendMail(m.SmtpHost+":"+m.SmtpPort,auth, m.Email, to, []byte(msg))
+	msg := m.formatMessage(subject, message, to)
+	err := smtp.SendMail(fmt.Sprintf("%s:%s", m.SmtpHost, m.SmtpPort), auth, m.Email, to, []byte(msg))
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (m *Mailer) formatMessage(subject, message string) string {
-	return fmt.Sprintf("Subject: %s\r\n\r\n%s\n", subject, message)
+func (m *Mailer) formatMessage(subject, message string, to []string) string {
+	str:= fmt.Sprintf("to: %s\r\nSubject: %s\r\n\r\n%s", to, subject, message)
+	log.Println(str)
+	return str
 }
