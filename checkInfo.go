@@ -31,7 +31,6 @@ func (c *CheckInfo) HandleLogEvent(success bool) {
 	}
 }
 
-
 func (c *CheckInfo) GetMailMessage() string {
 	datetime := time.Now()
 	return fmt.Sprintf("[%s] %s : %s @ %s\n%s\n", c.Vendor, c.Key, c.OnSuccessMessage, c.URL, datetime.Format("2006-01-02 15:04:05"))
