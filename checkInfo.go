@@ -52,13 +52,19 @@ func (c *CheckInfo) HandleMail(success bool) {
 }
 
 func (c *CheckInfo) HandleFailure() {
-	success := !c.IsNegativeCheck
+	success := false
+	if c.IsNegativeCheck == true {
+		success = true
+	}
 	c.HandleLogEvent(success)
 	c.HandleMail(success)
 }
 
 func (c *CheckInfo) HandleSuccess() {
-	success := !c.IsNegativeCheck
+	success := true
+	if c.IsNegativeCheck == true {
+		success = false
+	}
 	c.HandleLogEvent(success)
 	c.HandleMail(success)
 }

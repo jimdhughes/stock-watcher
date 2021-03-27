@@ -107,9 +107,12 @@ func handlePageCheck(doc *goquery.Document, c CheckInfo) {
 	case "text":
 		sel := doc.Text()
 		if strings.Contains(sel, c.LookFor) {
+			log.Printf("Found %s on %s\n", c.LookFor, c.Key)
 			c.HandleSuccess()
 		}
-		c.HandleLogEvent(false)
+		if !strings.Contains(sel, c.LookFor) {
+			c.HandleFailure()
+		}
 		break
 	default:
 		log.Fatalf("Invalid checktype declared: %s\n", c.CheckType)
