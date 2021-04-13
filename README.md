@@ -59,3 +59,17 @@ Definitions:
 `-c` The config file. Defaults to config.json in current directory
 
 ` -t` The ticker duration in seconds
+
+## Mailer
+
+To use the SMTP mailer, create a .env file in the same directory as your executable
+`touch .env`
+
+Add the following contents:
+
+```
+SMTP_HOST="your smtp hosdt"
+SMTP_PORT="default port"
+SMTP_EMAIL="your email account"
+SMTP_PASSWORD="email account password"
+```
