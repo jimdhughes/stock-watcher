@@ -95,7 +95,7 @@ func handlePageCheck(doc *goquery.Document, c CheckInfo) {
 
 	switch c.CheckType {
 	case "className":
-		sel := doc.Find(".product-out-of-stock")
+		sel := doc.Find(c.LookFor)
 		if len(sel.Nodes) > 0 {
 			c.HandleSuccess()
 		}
