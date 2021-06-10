@@ -23,7 +23,8 @@ The configuration files looks like so. It's an array of sites you want to monito
     "mailTo": "",
     "smsTo": "",
     "checkType": "className",
-    "isNegativeCheck": true
+    "isNegativeCheck": true,
+    "headers":[{key:"", value:""}]
   }
 ]
 ```
@@ -53,6 +54,8 @@ Definitions:
 - className : find an object by a class name. Helpful for sites with stylized "out of stock" messages
 - test: find a term on the page. Useful for pages that show or hide Out of Stock text on their site
   "isNegativeCheck": IF you're polling for "out of stock" and you want a notification of in stock, you're checking the negative of your result. Set your OnSuccess to be the "in stock" message and call this a negative check :)
+
+"headers": A Key/Value pair identifying custom headers to apply to a GET request
 
 ### CLI Arguments
 
