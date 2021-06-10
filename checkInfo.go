@@ -7,6 +7,10 @@ import (
 
 	"github.com/gookit/color"
 )
+type CustomHeaders struct {
+	Key string `json:"key"`
+	Value string `json:"value"`
+}
 
 type CheckInfo struct {
 	URL              string `json:"url"`
@@ -20,6 +24,7 @@ type CheckInfo struct {
 	CheckType        string `json:"checkType"`
 	IsNegativeCheck  bool   `json:"isNegativeCheck"`
 	Vendor           string `json:"vendor"`
+	CustomHeaders	[]CustomHeaders `json:"headers"`
 }
 
 func (c *CheckInfo) HandleLogEvent(success bool) {

@@ -15,6 +15,9 @@ import (
 )
 
 var infosToCheck []CheckInfo
+var client http.Client = http.Client{
+
+}
 
 const(
 	SMTP_HOST="SMTP_HOST"
@@ -74,7 +77,17 @@ func handleChecks() {
 }
 
 func handleCheck(c CheckInfo) {
-	res, err := http.Get(c.URL)
+	req, err := http.NewRequest(http.MethodGet, c.URL, nil)
+	if len(c.CustomHeaders) > 0 {
+		for _, h := range c.CustomHeaders {
+			req.Header.Add(h.Key, h.Value)
+		}
+	}
+	if err != nil {
+		log.Printf("ERROR forming GET request: %s\n", err.Error())
+		return 
+	}
+	res, err := client.Do(req)
 	if err != nil {
 		log.Printf("ERROR Getting URL : %s. ERROR: %s", c.URL, err.Error())
 		return
