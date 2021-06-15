@@ -15,20 +15,18 @@ import (
 )
 
 var infosToCheck []CheckInfo
-var client http.Client = http.Client{
+var client http.Client = http.Client{}
 
-}
-
-const(
-	SMTP_HOST="SMTP_HOST"
-	SMPT_PORT="SMTP_PORT"
-	SMTP_EMAIL="SMTP_EMAIL"
-	SMTP_PASSWORD="SMTP_PASSWORD"
+const (
+	SMTP_HOST     = "SMTP_HOST"
+	SMPT_PORT     = "SMTP_PORT"
+	SMTP_EMAIL    = "SMTP_EMAIL"
+	SMTP_PASSWORD = "SMTP_PASSWORD"
 )
 
 func main() {
 	initializeEnv()
-	err, infos := initializeChecks()
+	infos, err := initializeChecks()
 	if err != nil {
 		log.Fatal("Unable to parse configuration file")
 	}
@@ -37,37 +35,34 @@ func main() {
 		closed: make(chan struct{}),
 		ticker: time.NewTicker(time.Second * time.Duration(runtimeConfig.tickerDuration)),
 	}
-	c := make(chan os.Signal)
+	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
 	task.wg.Add(1)
 	go func() { defer task.wg.Done(); task.Run() }()
 
-	select {
-	case sig := <-c:
-		log.Printf("Got %s signal. Aborting...\n", sig)
-		task.Stop()
-	}
+	sig := <-c
+	log.Printf("Got %s signal. Aborting...\n", sig)
 }
 
 func initializeEnv() {
 	godotenv.Load()
 	AppMailer = &Mailer{
-		SmtpHost:os.Getenv(SMTP_HOST),
+		SmtpHost: os.Getenv(SMTP_HOST),
 		SmtpPort: os.Getenv(SMPT_PORT),
-		Email: os.Getenv(SMTP_EMAIL),
+		Email:    os.Getenv(SMTP_EMAIL),
 		Password: os.Getenv(SMTP_PASSWORD),
 	}
 }
 
-func initializeChecks() (error, []CheckInfo) {
+func initializeChecks() ([]CheckInfo, error) {
 	file, err := ioutil.ReadFile(runtimeConfig.configFileLocation)
 	if err != nil {
-		return err, nil
+		return nil, err
 	}
 	data := []CheckInfo{}
 	err = json.Unmarshal([]byte(file), &data)
-	return err, data
+	return data, err
 }
 
 func handleChecks() {
@@ -85,7 +80,7 @@ func handleCheck(c CheckInfo) {
 	}
 	if err != nil {
 		log.Printf("ERROR forming GET request: %s\n", err.Error())
-		return 
+		return
 	}
 	res, err := client.Do(req)
 	if err != nil {
@@ -115,7 +110,6 @@ func handlePageCheck(doc *goquery.Document, c CheckInfo) {
 		if len(sel.Nodes) == 0 {
 			c.HandleFailure()
 		}
-		break
 
 	case "text":
 		sel := doc.Text()
@@ -126,7 +120,6 @@ func handlePageCheck(doc *goquery.Document, c CheckInfo) {
 		if !strings.Contains(sel, c.LookFor) {
 			c.HandleFailure()
 		}
-		break
 	default:
 		log.Fatalf("Invalid checktype declared: %s\n", c.CheckType)
 	}
