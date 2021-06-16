@@ -26,6 +26,7 @@ const (
 
 func main() {
 	initializeEnv()
+	InitializeRuntime()
 	infos, err := initializeChecks()
 	if err != nil {
 		log.Fatal("Unable to parse configuration file")
