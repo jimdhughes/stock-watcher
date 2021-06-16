@@ -70,8 +70,6 @@ func (d *Datastore) ListItemsInBucket(bucketName string, start, limit int) ([]in
 	var values []interface{}
 	err := d.db.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte(bucketName))
-		stats := b.Stats()
-		log.Printf("Bucket %s has %d keys\n", bucketName, stats.KeyN)
 		if b == nil {
 			return errors.New(ERROR_BUCKET_DOES_NOT_EXIST)
 		}
@@ -97,7 +95,7 @@ func (d *Datastore) ListItemsInBucket(bucketName string, start, limit int) ([]in
 }
 
 // AddItemToBucket adds an item to a particular bucketName with a a key and any value
-func (d *Datastore) AddItemToBucket(bucketName string, key string, value interface{}) error {
+func (d *Datastore) PutItemInBucket(bucketName string, key string, value interface{}) error {
 	err := d.db.Update(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte(bucketName))
 		bytesValue, err := json.Marshal(value)
@@ -110,12 +108,11 @@ func (d *Datastore) AddItemToBucket(bucketName string, key string, value interfa
 	return err
 }
 
-func (d *Datastore) UpdateItemInBucket(bucketName string, key string, value interface{}) (interface{}, error) {
-
-	return nil, errors.New("not yet implemented")
-}
-
-func (d *Datastore) DeleteItemFromBucket(bucketName string, key string, value interface{}) (interface{}, error) {
-
-	return nil, errors.New("not yet implemented")
+// DeleteItemFromBucket deletes a value from a bucket identified by bucketName identified by a key
+func (d *Datastore) DeleteItemFromBucket(bucketName string, key string) error {
+	err := d.db.Update(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte(bucketName))
+		return b.Delete([]byte(key))
+	})
+	return err
 }

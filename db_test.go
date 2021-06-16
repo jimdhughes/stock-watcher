@@ -27,7 +27,7 @@ func TestDbCreateBucket(t *testing.T) {
 func TestCreateItemInBucket(t *testing.T) {
 	setup()
 	defer teardown()
-	err := d.AddItemToBucket(TEST_BUCKET_NAME, "1", "hi")
+	err := d.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
@@ -37,7 +37,7 @@ func TestCreateItemInBucket(t *testing.T) {
 func TestGetItemFromBucket(t *testing.T) {
 	setup()
 	defer teardown()
-	err := d.AddItemToBucket(TEST_BUCKET_NAME, "1", "hi")
+	err := d.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
@@ -54,7 +54,7 @@ func TestGetItemFromBucket(t *testing.T) {
 func TestListBucketItems(t *testing.T) {
 	setup()
 	defer teardown()
-	err := d.AddItemToBucket(TEST_BUCKET_NAME, "1", "hi")
+	err := d.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
@@ -70,7 +70,7 @@ func TestListBucketItems(t *testing.T) {
 func TestListMoreItemsThanInBucket(t *testing.T) {
 	setup()
 	defer teardown()
-	err := d.AddItemToBucket(TEST_BUCKET_NAME, "1", "hi")
+	err := d.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
@@ -86,7 +86,7 @@ func TestListMoreItemsThanInBucket(t *testing.T) {
 func TestListItemsStartingAtIndexLargerThanBucketSize(t *testing.T) {
 	setup()
 	defer teardown()
-	err := d.AddItemToBucket(TEST_BUCKET_NAME, "1", "hi")
+	err := d.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
@@ -96,6 +96,33 @@ func TestListItemsStartingAtIndexLargerThanBucketSize(t *testing.T) {
 	}
 	if len(items) != 0 {
 		t.Fatalf("expect exactly 1 item")
+	}
+}
+
+func TestDeleteItemFromBucket(t *testing.T) {
+	setup()
+	defer teardown()
+	err := d.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	items, err := d.ListItemsInBucket(TEST_BUCKET_NAME, 0, 1)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	if len(items) != 1 {
+		t.Fatalf("expect exactly 1 item")
+	}
+	err = d.DeleteItemFromBucket(TEST_BUCKET_NAME, "1")
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	items, err = d.ListItemsInBucket(TEST_BUCKET_NAME, 0, 1)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	if len(items) > 0 {
+		t.Fatalf("expected to now have 0 items")
 	}
 }
 
