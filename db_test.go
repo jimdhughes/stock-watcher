@@ -65,7 +65,38 @@ func TestListBucketItems(t *testing.T) {
 	if len(items) != 1 {
 		t.Fatalf("Expceted 1 item. got 0")
 	}
+}
 
+func TestListMoreItemsThanInBucket(t *testing.T) {
+	setup()
+	defer teardown()
+	err := d.AddItemToBucket(TEST_BUCKET_NAME, "1", "hi")
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	items, err := d.ListItemsInBucket(TEST_BUCKET_NAME, 0, 10)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	if len(items) != 1 {
+		t.Fatalf("expect exactly 1 item")
+	}
+}
+
+func TestListItemsStartingAtIndexLargerThanBucketSize(t *testing.T) {
+	setup()
+	defer teardown()
+	err := d.AddItemToBucket(TEST_BUCKET_NAME, "1", "hi")
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	items, err := d.ListItemsInBucket(TEST_BUCKET_NAME, 5, 10)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	if len(items) != 0 {
+		t.Fatalf("expect exactly 1 item")
+	}
 }
 
 func setup() {
