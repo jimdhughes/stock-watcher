@@ -11,6 +11,7 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/nsf/termbox-go v1.1.1 // indirect
+	github.com/spf13/cobra v1.1.3 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
 	golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4 // indirect
 	golang.org/x/sys v0.0.0-20210616045830-e2b7044e8c71 // indirect

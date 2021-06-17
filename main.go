@@ -5,63 +5,34 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
-	"os/signal"
 	"strings"
-	"time"
 
+	"gihtub.com/jimdhughes/stock-watcher/cmd"
+	"gihtub.com/jimdhughes/stock-watcher/models"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/joho/godotenv"
 )
 
-var infosToCheck []CheckInfo
+var infosToCheck []models.Watcher
 var client http.Client = http.Client{}
-
-const (
-	SMTP_HOST     = "SMTP_HOST"
-	SMPT_PORT     = "SMTP_PORT"
-	SMTP_EMAIL    = "SMTP_EMAIL"
-	SMTP_PASSWORD = "SMTP_PASSWORD"
-)
 
 func main() {
 	initializeEnv()
 	InitializeRuntime()
-	infos, err := initializeChecks()
-	if err != nil {
-		log.Fatal("Unable to parse configuration file")
-	}
-	infosToCheck = infos
-	task := &Task{
-		closed: make(chan struct{}),
-		ticker: time.NewTicker(time.Second * time.Duration(runtimeConfig.tickerDuration)),
-	}
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-
-	task.wg.Add(1)
-	go func() { defer task.wg.Done(); task.Run() }()
-
-	sig := <-c
-	log.Printf("Got %s signal. Aborting...\n", sig)
+	cmd := cmd.GetRootCommand()
+	cmd.Execute()
 }
 
 func initializeEnv() {
 	godotenv.Load()
-	AppMailer = &Mailer{
-		SmtpHost: os.Getenv(SMTP_HOST),
-		SmtpPort: os.Getenv(SMPT_PORT),
-		Email:    os.Getenv(SMTP_EMAIL),
-		Password: os.Getenv(SMTP_PASSWORD),
-	}
 }
 
-func initializeChecks() ([]CheckInfo, error) {
+func initializeChecks() ([]models.Watcher, error) {
 	file, err := ioutil.ReadFile(runtimeConfig.configFileLocation)
 	if err != nil {
 		return nil, err
 	}
-	data := []CheckInfo{}
+	data := []models.Watcher{}
 	err = json.Unmarshal([]byte(file), &data)
 	return data, err
 }
@@ -72,7 +43,7 @@ func handleChecks() {
 	}
 }
 
-func handleCheck(c CheckInfo) {
+func handleCheck(c models.Watcher) {
 	req, err := http.NewRequest(http.MethodGet, c.URL, nil)
 	if len(c.CustomHeaders) > 0 {
 		for _, h := range c.CustomHeaders {
@@ -100,7 +71,7 @@ func handleCheck(c CheckInfo) {
 	handlePageCheck(doc, c)
 }
 
-func handlePageCheck(doc *goquery.Document, c CheckInfo) {
+func handlePageCheck(doc *goquery.Document, c models.Watcher) {
 
 	switch c.CheckType {
 	case "className":
@@ -124,5 +95,4 @@ func handlePageCheck(doc *goquery.Document, c CheckInfo) {
 	default:
 		log.Fatalf("Invalid checktype declared: %s\n", c.CheckType)
 	}
-
 }
