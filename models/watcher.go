@@ -40,7 +40,7 @@ func (c *Watcher) HandleLogEvent(success bool) {
 
 func (c *Watcher) GetMailMessage() string {
 	datetime := time.Now()
-	msg := fmt.Sprintf("[%s] %s : %s @ %s\n%s\n", c.Vendor, c.Key, c.OnSuccessMessage, c.URL, datetime.Format("2006-01-02 15:04:05"))
+	msg := fmt.Sprintf("[%s] %s : %s @ %s\n\n Detected At: %s\n", c.Vendor, c.Key, c.OnSuccessMessage, c.URL, datetime.Format("2006-01-02 15:04:05"))
 	return msg
 }
 

@@ -1,6 +1,6 @@
 [
   {
-    "url": "https://www.amd.com/en/direct-buy/5458372800/ca",
+    "url": "https://www.amd.com/en/direct-buy/products/5458372800/ca",
     "key": "AMD Radeon™ RX 6800 XT Graphics",
     "vendor": "AMD",
     "description": "AMD Radeon™ RX 6800 XT Graphics",
@@ -13,7 +13,7 @@
     "isNegativeCheck": true
   },
   {
-    "url": "https://www.amd.com/en/direct-buy/5458372200/ca",
+    "url": "https://www.amd.com/en/direct-buy/products/5458372200/ca",
     "key": "AMD Radeon™ RX 6900 XT Graphics",
     "vendor": "AMD",
     "description": "AMD Radeon™ RX 6900 XT Graphics",
@@ -24,18 +24,5 @@
     "smsTo": "",
     "checkType": "className",
     "isNegativeCheck": true
-  },
-  {
-    "url": "https://www.memoryexpress.com/Products/MX00115288",
-    "key": "MSI Radeon RX 6800 XT",
-    "vendor": "Memory Express",
-    "description": "Radeon GPU - might buy but not that interested",
-    "lookFor": "Add To Cart",
-    "onSuccessMessage": "IN stock",
-    "onFailureMessage": "OUT of stock",
-    "mailTo": [""],
-    "smsTo": "",
-    "checkType": "text",
-    "isNegativeCheck": false
   }
 ]
