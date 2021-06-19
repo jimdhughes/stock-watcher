@@ -15,16 +15,23 @@ const (
 	ERROR_MARSHALL_OBJECT       = "unable to marshal object"
 )
 
+var datastore Datastore
+
 type Datastore struct {
 	db *bbolt.DB
 }
 
-func (d *Datastore) Init(dbname string) {
+func Init(dbname string) {
+	datastore = Datastore{}
 	conn, err := bbolt.Open(dbname, 0777, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	d.db = conn
+	datastore.db = conn
+}
+
+func GetDatastore() Datastore {
+	return datastore
 }
 
 // CreateBucket creates a bucket with the name passed by the bucket parameter

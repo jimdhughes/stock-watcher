@@ -1,8 +1,10 @@
 package data
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"path"
 	"testing"
 )
 
@@ -11,37 +13,32 @@ const (
 	TEST_BUCKET_NAME = "bucket1"
 )
 
-var d Datastore
-
 func TestDbCreateBucket(t *testing.T) {
-	d = Datastore{}
 	defer teardown()
-	d.Init(TEST_DB_NAME)
-	_, err := d.CreateBucket(TEST_BUCKET_NAME)
+	Init(TEST_DB_NAME)
+	_, err := datastore.CreateBucket(TEST_BUCKET_NAME)
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
-
 }
 
 func TestCreateItemInBucket(t *testing.T) {
 	setup()
 	defer teardown()
-	err := d.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
+	err := datastore.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
-
 }
 
 func TestGetItemFromBucket(t *testing.T) {
 	setup()
 	defer teardown()
-	err := d.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
+	err := datastore.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
-	val, err := d.GetItemFromBucket(TEST_BUCKET_NAME, "1")
+	val, err := datastore.GetItemFromBucket(TEST_BUCKET_NAME, "1")
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
@@ -54,11 +51,11 @@ func TestGetItemFromBucket(t *testing.T) {
 func TestListBucketItems(t *testing.T) {
 	setup()
 	defer teardown()
-	err := d.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
+	err := datastore.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
-	items, err := d.ListItemsInBucket(TEST_BUCKET_NAME, 0, 1)
+	items, err := datastore.ListItemsInBucket(TEST_BUCKET_NAME, 0, 1)
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
@@ -70,11 +67,11 @@ func TestListBucketItems(t *testing.T) {
 func TestListMoreItemsThanInBucket(t *testing.T) {
 	setup()
 	defer teardown()
-	err := d.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
+	err := datastore.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
-	items, err := d.ListItemsInBucket(TEST_BUCKET_NAME, 0, 10)
+	items, err := datastore.ListItemsInBucket(TEST_BUCKET_NAME, 0, 10)
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
@@ -86,11 +83,11 @@ func TestListMoreItemsThanInBucket(t *testing.T) {
 func TestListItemsStartingAtIndexLargerThanBucketSize(t *testing.T) {
 	setup()
 	defer teardown()
-	err := d.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
+	err := datastore.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
-	items, err := d.ListItemsInBucket(TEST_BUCKET_NAME, 5, 10)
+	items, err := datastore.ListItemsInBucket(TEST_BUCKET_NAME, 5, 10)
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
@@ -102,22 +99,22 @@ func TestListItemsStartingAtIndexLargerThanBucketSize(t *testing.T) {
 func TestDeleteItemFromBucket(t *testing.T) {
 	setup()
 	defer teardown()
-	err := d.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
+	err := datastore.PutItemInBucket(TEST_BUCKET_NAME, "1", "hi")
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
-	items, err := d.ListItemsInBucket(TEST_BUCKET_NAME, 0, 1)
+	items, err := datastore.ListItemsInBucket(TEST_BUCKET_NAME, 0, 1)
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
 	if len(items) != 1 {
 		t.Fatalf("expect exactly 1 item")
 	}
-	err = d.DeleteItemFromBucket(TEST_BUCKET_NAME, "1")
+	err = datastore.DeleteItemFromBucket(TEST_BUCKET_NAME, "1")
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
-	items, err = d.ListItemsInBucket(TEST_BUCKET_NAME, 0, 1)
+	items, err = datastore.ListItemsInBucket(TEST_BUCKET_NAME, 0, 1)
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
@@ -127,14 +124,17 @@ func TestDeleteItemFromBucket(t *testing.T) {
 }
 
 func setup() {
-	d = Datastore{}
-	d.Init(TEST_DB_NAME)
-	d.CreateBucket(TEST_BUCKET_NAME)
+	execpath, _ := os.Executable()
+	directory := path.Dir(execpath)
+	Init(fmt.Sprintf("%s/%s", directory, TEST_DB_NAME))
+	datastore.CreateBucket(TEST_BUCKET_NAME)
 }
 
 func teardown() {
-	d.db.Close()
-	err := os.Remove(TEST_DB_NAME)
+	execpath, _ := os.Executable()
+	directory := path.Dir(execpath)
+	datastore.db.Close()
+	err := os.Remove(fmt.Sprintf("%s/%s", directory, TEST_DB_NAME))
 	if err != nil {
 		log.Println("Error tearingdown")
 	}
