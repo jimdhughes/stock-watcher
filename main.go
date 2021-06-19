@@ -6,11 +6,7 @@ import (
 )
 
 func main() {
-	initializeEnv()
+	godotenv.Load()
 	cmd := cmd.GetRootCommand()
 	cmd.Execute()
-}
-
-func initializeEnv() {
-	godotenv.Load()
 }
